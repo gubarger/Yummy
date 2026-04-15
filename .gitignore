@@ -1,0 +1,27 @@
+# CMake
+build/
+*.cmake
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+cmake-*.ninja
+.ninja_deps
+.ninja_log
+*.ninja
+
+# Presets
+build-*/
+out/
+dist/
+.cache/
+
+# IDE/editors
+.vscode/
+.vs
+.idea/
+*.swp
+*.swo

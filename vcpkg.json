@@ -1,0 +1,13 @@
+{
+  "name": "yummy-lang",
+  "version": "0.1.0",
+  "dependencies": [
+    {
+      "name": "llvm",
+      "default-features": false,
+      "features": [
+        "default-targets"
+      ]
+    }
+  ]
+}
