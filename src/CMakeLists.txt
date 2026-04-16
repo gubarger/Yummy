@@ -20,13 +20,10 @@ LLVM_MAP_COMPONENTS_TO_LIBNAMES(LLVM_LIBS
 add_executable(yummy-lang-compiler
 	main.cpp
 
-	syntax/lexer.h
 	syntax/parser.h
+	syntax/ast.h
 
-	safety/borrow_checker.h
-	safety/name_resolution.h
-	safety/type_checking.h
-	safety/type_inference.h
+	syntax/parser.cpp
 )
 
 target_link_libraries(yummy-lang-compiler 
