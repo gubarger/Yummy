@@ -2,25 +2,67 @@
  * @file ast.h
  * @brief An abstract syntax tree (AST) for creating expression trees. Needed
  * for the parser.
- * @note The skeletal example (may change).
  * @license MIT
  * @author Gubarger
  */
 
-#include <memory>
+#pragma once
 
-#ifndef YUMMY_AST_H
-#define YUMMY_AST_H
+#include <memory>
+#include <variant>
 
 namespace yummy::syntax {
-struct Node {
-  bool success;
-  size_t position;
+struct ASTNode;
+using nodeptr = std::unique_ptr<ASTNode>;
+
+struct NumberNode {
+  int value;
 };
 
-struct ResultNode {
-  std::unique_ptr<Node> node;
+struct BinaryOperNode {
+  char op;
+
+  nodeptr left;
+  nodeptr right;
+};
+
+struct UnaryOperNode {
+  char op;
+
+  nodeptr operand;
+};
+
+struct ASTNode {
+  std::variant<NumberNode, BinaryOperNode, UnaryOperNode> data;
+
+  /* Factory functions for easy creation */
+
+  /**
+   * @brief Create number node
+   *
+   * @return nodeptr
+   */
+  static nodeptr Number(int value) {
+    return std::make_unique<ASTNode>(NumberNode{value});
+  }
+
+  /**
+   * @brief Create binop node
+   *
+   * @return nodeptr
+   */
+  static nodeptr Binaroper(char op, nodeptr left, nodeptr right) {
+    return std::make_unique<ASTNode>(
+        BinaryOperNode{op, std::move(left), std::move(right)});
+  }
+
+  /**
+   * @brief Create unarop node
+   *
+   * @return nodeptr
+   */
+  static nodeptr Unaroper(char op, nodeptr operand) {
+    return std::make_unique<ASTNode>(UnaryOperNode{op, std::move(operand)});
+  }
 };
 }  // namespace yummy::syntax
-
-#endif  // !YUMMY_AST_H

@@ -6,30 +6,39 @@
  * @author Gubarger
  */
 
+#pragma once
+
 #include <cstdint>
-#include <hash_map>
 #include <string>
 #include <unordered_map>
 
 #include "ast.h"
 
-#ifndef YUMMY_PARSER_H
-#define YUMMY_PARSER_H
-
 namespace yummy::syntax {
+struct ParseResult {
+  bool success;
+  size_t position;
+  nodeptr node;  // AST node
+};
+
+// struct RuleID {
+//   int rule;
+//   size_t position;
+// };
+
 class Parser {
  public:
-  Parser(std::string_view input);
+  Parser(std::string_view input = "");
 
-  [[nodiscard]] size_t MemoKey(int rule, size_t pos);
+  /**
+   * @brief Test example.
+   * @todo Create your own hash class for generation.
+   */
+  [[nodiscard]] size_t MemoGenKey(int rule, size_t position);
+  [[nodiscard]] size_t SkipSpaces(size_t position);
 
  public:
-  std::string input;
-  std::unordered_map<size_t, ResultNode> memoization;
-
- private:
-  // [[nodiscard]] ResultNode Visit(Node* node);
+  std::string input__;
+  std::unordered_map<size_t, ParseResult> memo__;
 };
 }  // namespace yummy::syntax
-
-#endif  // !YUMMY_PARSER_H
