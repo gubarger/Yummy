@@ -21,11 +21,15 @@ LLVM_MAP_COMPONENTS_TO_LIBNAMES(LLVM_LIBS
 add_executable(yummy-lang-compiler
 	main.cpp
 
-	syntax/parser.h
+	syntax/lexer.h
 	syntax/ast.h
+	syntax/parser.h
 
 	syntax/parser.cpp
- )
+	syntax/lexer.cpp
+
+	utils/memo_hash.h
+)
 
 target_link_libraries(yummy-lang-compiler 
 	PRIVATE 

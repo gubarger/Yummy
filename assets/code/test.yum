@@ -1,0 +1,6 @@
+/* A useless test file for checking parsing */
+
+func main() -> i32 {
+	var x = 10;
+	ret 0;
+}
