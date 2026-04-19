@@ -4,19 +4,16 @@
 
 namespace yummy::syntax {
 Lexer::Lexer(std::string_view source)
-    : source_(std::move(std::string(source))),
-      position_(0),
-      line_(1),
-      column_(1) {}
+    : source_(source), position_(0), line_(1), column_(1) {}
 
 /* See */
 
-char Lexer::SeeCurrent() {
+char Lexer::SeeCurrent() const {
   if (position_ >= source_.size()) return '\0';
   return source_[position_];
 }
 
-char Lexer::SeeNext() {
+char Lexer::SeeNext() const {
   if (position_ + 1 >= source_.size()) return '\0';
   return source_[position_ + 1];
 }
@@ -64,7 +61,7 @@ Token Lexer::ReadNumber() {
   int lineStart = line_, columnStart = column_;
   std::string currentLexeme;
 
-  // Intager
+  // Integer
   while (std::isdigit(SeeCurrent())) currentLexeme += MoveToNext();
 
   // Fractional
@@ -88,15 +85,15 @@ Token Lexer::ReadWord() {
   while (std::isalnum(SeeCurrent()) || SeeCurrent() == '_')
     currentLexeme += MoveToNext();
 
-  if (keywords_.count(currentLexeme))
-    return Token{keywords_[currentLexeme], currentLexeme, lineStart,
-                 columnStart};
+  auto it = keywords_.find(currentLexeme);
+  if (it != keywords_.end())
+    return Token{it->second, currentLexeme, lineStart, columnStart};
 
   return Token{Token::TokenType::Identifier, currentLexeme, lineStart,
                columnStart};
 }
 
-Token Lexer::ReadLine() {
+Token Lexer::ReadString() {
   int lineStart = line_, columnStart = column_;
   MoveToNext();  // Omitting the opening quotation mark
   std::string currentLexeme;
@@ -251,9 +248,6 @@ Token Lexer::ReadOperator(int lineStart, int columnStart) {
       return Token{Token::TokenType::Undefined, std::string(1, current),
                    lineStart, columnStart};
   }
-
-  return Token{Token::TokenType::Undefined, std::string(1, current), lineStart,
-               columnStart};
 }
 
 Token Lexer::ReadNextToken() {
@@ -285,7 +279,7 @@ Token Lexer::ReadNextToken() {
     else if (std::isalpha(current) || current == '_')
       result = ReadWord();
     else if (current == '"')
-      result = ReadLine();
+      result = ReadString();
     else
       result = ReadOperator(lineStart, columnStart);
 
@@ -294,7 +288,7 @@ Token Lexer::ReadNextToken() {
   }
 }
 
-bool Lexer::IsEndLineToken(Token::TokenType type) {
+bool Lexer::IsEndLineToken(Token::TokenType type) const {
   using TT = Token::TokenType;
 
   switch (type) {
@@ -331,7 +325,7 @@ std::vector<Token> Lexer::Tokenize() {
   return tokens;
 }
 
-std::string Lexer::GetTypeInString(Token::TokenType type) {
+std::string Lexer::GetTypeInString(Token::TokenType type) const {
   // NOTE: I'll change it later std::unordered_map
   using TT = Token::TokenType;
 

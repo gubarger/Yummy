@@ -14,7 +14,6 @@
 #include <unordered_map>
 
 namespace yummy::syntax {
-
 struct Token {
   enum class TokenType {
     /* Literals */
@@ -98,8 +97,8 @@ class Lexer {
  public:
   Lexer(std::string_view source = "");
 
-  [[nodiscard]] char SeeCurrent();
-  [[nodiscard]] char SeeNext();
+  [[nodiscard]] char SeeCurrent() const;
+  [[nodiscard]] char SeeNext() const;
   char MoveToNext();
 
   [[nodiscard]] bool SkipSpacesAndCheckNewline();
@@ -107,30 +106,31 @@ class Lexer {
 
   [[nodiscard]] Token ReadNumber();
   [[nodiscard]] Token ReadWord();
-  [[nodiscard]] Token ReadLine();
+  [[nodiscard]] Token ReadString();
   [[nodiscard]] Token ReadOperator(int lineStart, int columnStart);
   [[nodiscard]] Token ReadNextToken();
 
-  [[nodiscard]] bool IsEndLineToken(Token::TokenType type);
+  [[nodiscard]] bool IsEndLineToken(Token::TokenType type) const;
 
   [[nodiscard]] std::vector<Token> Tokenize();
 
   /* Debug */
-  [[nodiscard]] std::string GetTypeInString(Token::TokenType type);
+  [[nodiscard]] std::string GetTypeInString(Token::TokenType type) const;
 
  private:
   std::string source_;
-  int position_;
+  std::size_t position_;
   int line_;
   int column_;
 
   Token::TokenType lastTokenType_ = Token::TokenType::Undefined;
 
-  std::unordered_map<std::string, Token::TokenType> keywords_ = {
-      {"func", Token::TokenType::Func},   {"ret", Token::TokenType::Return},
-      {"if", Token::TokenType::If},       {"else", Token::TokenType::Else},
-      {"while", Token::TokenType::While}, {"var", Token::TokenType::Var},
-      {"mut", Token::TokenType::Mut},     {"f64", Token::TokenType::Double},
-      {"i32", Token::TokenType::I32}};
+  inline static const std::unordered_map<std::string, Token::TokenType>
+      keywords_ = {
+          {"func", Token::TokenType::Func},   {"ret", Token::TokenType::Return},
+          {"if", Token::TokenType::If},       {"else", Token::TokenType::Else},
+          {"while", Token::TokenType::While}, {"var", Token::TokenType::Var},
+          {"mut", Token::TokenType::Mut},     {"f64", Token::TokenType::Double},
+          {"i32", Token::TokenType::I32}};
 };
 }  // namespace yummy::syntax
