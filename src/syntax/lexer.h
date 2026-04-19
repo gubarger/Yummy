@@ -11,6 +11,7 @@
 #pragma once
 
 #include <string>
+#include <unordered_map>
 
 namespace yummy::syntax {
 
@@ -20,26 +21,26 @@ struct Token {
     Integer,  // 3, 10, -89
     Line,     // "hello", "10 + 20 = 30"
     Identifier,
-    CommentLine,  // a-la C++ style: /* hello */
+    // CommentLine,  // a-la C++ style: /* hello */
 
     /* Keywords */
     Func,    // func
     Return,  // ret
 
     If,
-    ElseIf,
+    // ElseIf,
     Else,
     While,
     For,
 
     Var,
     Mut,
-    Compile,  // Compute at compile time
+    // Compile,  // Compute at compile time
     I32,
-    Float,   // 3.14f
+    // Float,  // 3.14f
     Double,  // 3.14
-    String,
-    Sign,  // 'a', '1'
+    // String,
+    // Sign,  // 'a', '1'
 
     /* Operators */
     Plus,     // +
@@ -59,7 +60,9 @@ struct Token {
     Down,       // <
     UpEqual,    // >=
     DownEqual,  // <=
+    And,        // &
     AndAnd,     // &&
+    Or,         // |
     OrOr,       // ||
     Not,        // !
 
@@ -76,11 +79,11 @@ struct Token {
     LeftSquare,    // [
     RightSquare,   // ]
     Comma,         // ,
-    Semicolon,     // ;
-    Colon,         // :
+    // Semicolon,     // ;
+    Colon,  // :
 
     /* Service */
-    EndLine,   // \n or ;
+    EndLine,   // \n
     EndFile,   // EOF
     Undefined  // Unknown token = error
   };
@@ -93,9 +96,41 @@ struct Token {
 
 class Lexer {
  public:
-  Lexer(std::string_view input = "");
+  Lexer(std::string_view source = "");
+
+  [[nodiscard]] char SeeCurrent();
+  [[nodiscard]] char SeeNext();
+  char MoveToNext();
+
+  [[nodiscard]] bool SkipSpacesAndCheckNewline();
+  void SkipComment();
+
+  [[nodiscard]] Token ReadNumber();
+  [[nodiscard]] Token ReadWord();
+  [[nodiscard]] Token ReadLine();
+  [[nodiscard]] Token ReadOperator(int lineStart, int columnStart);
+  [[nodiscard]] Token ReadNextToken();
+
+  [[nodiscard]] bool IsEndLineToken(Token::TokenType type);
+
+  [[nodiscard]] std::vector<Token> Tokenize();
+
+  /* Debug */
+  [[nodiscard]] std::string GetTypeInString(Token::TokenType type);
 
  private:
-  std::string input_;
+  std::string source_;
+  int position_;
+  int line_;
+  int column_;
+
+  Token::TokenType lastTokenType_ = Token::TokenType::Undefined;
+
+  std::unordered_map<std::string, Token::TokenType> keywords_ = {
+      {"func", Token::TokenType::Func},   {"ret", Token::TokenType::Return},
+      {"if", Token::TokenType::If},       {"else", Token::TokenType::Else},
+      {"while", Token::TokenType::While}, {"var", Token::TokenType::Var},
+      {"mut", Token::TokenType::Mut},     {"f64", Token::TokenType::Double},
+      {"i32", Token::TokenType::I32}};
 };
 }  // namespace yummy::syntax

@@ -150,7 +150,6 @@ struct AssignmentNode {
 struct ConditionalNode {
   NodePtr condition;
   std::vector<InstructionNodePtr> bodyIf;
-  // std::vector<InstructionNodePtr> bodyElseIf;
   std::vector<InstructionNodePtr> bodyElse;  // May be empty
 };
 
